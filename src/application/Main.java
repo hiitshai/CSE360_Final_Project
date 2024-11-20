@@ -36,14 +36,16 @@ public class Main extends Application {
 		        "email VARCHAR(255) UNIQUE NOT NULL, " +
 		        "username VARCHAR(255) UNIQUE NOT NULL, " +
 		        "password VARCHAR(255) NOT NULL, " +
-		        "role ENUM('buyer', 'seller', 'admin') NOT NULL" +
+		        "is_buyer BOOLEAN DEFAULT FALSE, " +
+		        "is_seller BOOLEAN DEFAULT FALSE, " +
+		        "is_admin BOOLEAN DEFAULT FALSE" +
 		        ")";
 		DataManipulation.update(createUserTable);
 
 
-		String insertUsers = "INSERT INTO user (email, username, password, role) VALUES " +
-		        "('hdtang1@asu.edu', 'hdtang1', 'password', 'admin'), " +
-		        "('test', 'test', 'test', 'buyer')";
+		String insertUsers = "INSERT INTO user (email, username, password, is_buyer, is_seller, is_admin) VALUES " +
+		        "('hdtang1@asu.edu', 'hdtang1', 'password', '0', '0', '1')," + //My SQL does not support boolean data types, it replaces false with 0 and true with 1
+		        "('test', 'test', 'test', '1', '1', '0')";
 		DataManipulation.update(insertUsers);
 
 		/*String query = "SELECT book.author " + "FROM book " + "JOIN borrow ON book.book_id = borrow.book_id "
