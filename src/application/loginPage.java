@@ -1,6 +1,7 @@
 package application;
 
 import javafx.geometry.Insets;
+
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -17,6 +18,10 @@ import javafx.scene.text.Font;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 /*PLEASE READ
  * You can go to the My Account page by typing the login info below. The signup page currently
@@ -32,18 +37,29 @@ import javafx.scene.image.ImageView;
 
 public class loginPage extends Pane {
     
+	private boolean isValidCredentials(String username, String password) {
+	    String query = "SELECT password FROM user WHERE username = ?";
+
+	    try (PreparedStatement preparedStatement = DatabaseConnection.getConnection2DB().prepareStatement(query)) {
+	        preparedStatement.setString(1, username);
+
+	        ResultSet resultSet = preparedStatement.executeQuery();
+
+	        if (resultSet.next()) {
+	            String storedPassword = resultSet.getString("password");
+	            return storedPassword.equals(password);
+	        }
+	    } catch (Exception ex) {
+	        ex.printStackTrace();
+	    }
+
+	    return false;
+	}
+
+
+	
     public loginPage() {
-    	/*
-    	Image logo = new Image("https://www.pngegg.com/en/png-camvy"); 
-    	ImageView logoView = new ImageView(logo);
-
-    	logoView.setFitWidth(50);
-    	logoView.setFitHeight(50);
-
-    	VBox topLeftBox = new VBox(logoView);
-    	topLeftBox.setAlignment(Pos.TOP_LEFT);
-    	topLeftBox.setPadding(new Insets(10)); 
-		*/
+    	
     
     	// Main rectangle that centers and resizes
         Rectangle testRectangle = new Rectangle();
@@ -145,13 +161,28 @@ public class loginPage extends Pane {
         loginButton.prefWidthProperty().bind(loginBox.prefWidthProperty());
         
         loginButton.setOnAction(e-> {
-        	if (usernameField.getText().equals("test") && passwordField.getText().equals("test")) {
+        	/*if (usernameField.getText().equals("test") && passwordField.getText().equals("test")) {
         		myAccountPage myAccount = new myAccountPage();
                 Scene myAccountScene = new Scene(myAccount, 800, 400);
                 myAccount.setStyle("-fx-background-color: #F5DEB3;");            
                 Stage mainStage = Main.getPrimaryStage();
                 mainStage.setScene(myAccountScene);
-        	}
+        	}*/
+    	    String username = usernameField.getText();
+    	    String password = passwordField.getText(); // In practice, use a hashed version of this password for comparison.
+
+    	    if (isValidCredentials(username, password)) {
+    	        myAccountPage myAccount = new myAccountPage();
+    	        Scene myAccountScene = new Scene(myAccount, 800, 400);
+    	        myAccount.setStyle("-fx-background-color: #F5DEB3;");            
+    	        Stage mainStage = Main.getPrimaryStage();
+    	        mainStage.setScene(myAccountScene);
+    	    } else {
+    	        // Show error message if credentials are invalid
+    	        Label errorLabel = new Label("Invalid username or password.");
+    	        errorLabel.setTextFill(Color.RED);
+    	        loginBox.getChildren().add(errorLabel);
+    	    }
         });
 
         loginBox.getChildren().addAll(signInLabel, usernameLabel, usernameField, passwordLabel, passwordField, visiblePasswordField, toggleButton, forgotPasswordButton, forgotUsernameButton, loginButton);
