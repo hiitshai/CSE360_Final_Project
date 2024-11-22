@@ -17,6 +17,11 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class signUpPage extends Pane {
 
@@ -137,20 +142,92 @@ public class signUpPage extends Pane {
         HBox roleBox = new HBox(10, roleLabel, sellerCheckBox, buyerCheckBox);
         roleBox.setAlignment(Pos.BASELINE_LEFT);
         
+        VBox errorBox = new VBox(10);
+        errorBox.setAlignment(Pos.BASELINE_LEFT);
+        
         Button confirmButton = new Button("Join Now");
         confirmButton.setOnAction(e -> {
-			if(passwordField.getText() != confirmPasswordField.getText()) {
+        	//"SELECT * from messages WHERE EmpIDNo = 'COMSCI0001'";
+        	//Hbox ErrorBox = new HBox(1)
+        	int sellerRole = 0;
+        	int buyerRole = 0;
+        	
+			if(!passwordField.getText().equals(confirmPasswordField.getText())) {
+				
+				System.out.println(passwordField);
+				System.out.println(confirmPasswordField);
 				
 				Label notMatchLabel = new Label("Passwords do not match");
 				notMatchLabel.setFont(new Font("Arial", 14));
 				notMatchLabel.setMinWidth(200);
-				roleBox.getChildren().addAll(notMatchLabel);
+				if(!errorBox.getChildren().contains(notMatchLabel)) {
+					errorBox.getChildren().addAll(notMatchLabel);
+					return;
+					
+				}
+				else {
+					errorBox.getChildren().remove(notMatchLabel);
+				}
+				return; 
 			}
+			
+			//System.out.println("test to see if it exits");
         	
         	String email = emailTextField.getText();
+        	//if(email != " ") {
+	        	try(Statement emailStatement = DatabaseConnection.getConnection2DB().createStatement()) {
+	        		String queryEmailCheck = "SELECT COUNT(*) FROM user WHERE email = '" + email.replace("'", "''") + "'";
+	        		ResultSet resultSet = emailStatement.executeQuery(queryEmailCheck);
+	        		
+	        		if(resultSet.next()) {
+	        			int counter = resultSet.getInt(1);
+	        			if(counter > 0) {
+	        				Label emailExist = new Label("Email Already Exists");
+	        				emailExist.setFont(new Font("Arial", 14));
+	        				emailExist.setMinWidth(200);
+	        				errorBox.getChildren().addAll(emailExist);
+	        				return;         			
+	        				}
+	        		}
+	        	
+	        	} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+        	//}
+        	
         	String username = usernameTextField.getText();
+        	try(Statement userStatement = DatabaseConnection.getConnection2DB().createStatement()) {
+        		String queryUsernameCheck = "SELECT COUNT(*) FROM user WHERE username = '" + username.replace("'", "''") + "'";
+        		ResultSet resultSetUsername = userStatement.executeQuery(queryUsernameCheck);
+        		
+        		if(resultSetUsername.next()) {
+        			int counter = resultSetUsername.getInt(1);
+        			if(counter > 0) {
+        				Label usernameExist = new Label("Username Already Exists");
+        				usernameExist.setFont(new Font("Arial", 14));
+        				usernameExist.setMinWidth(200);
+        				errorBox.getChildren().addAll(usernameExist);
+        				return;         			
+        				}
+        		}
+        	} catch (SQLException e1) {
+        		e1.printStackTrace();
+        	}
         	
         	String password = confirmPasswordField.getText();
+        	
+        	if(sellerCheckBox.isSelected()) {
+        		sellerRole = 1;
+        	}
+        	
+        	if(buyerCheckBox.isSelected()) {
+        		buyerRole = 1;
+        	}
+        	
+        	String insertUsers = "INSERT INTO user (email, username, password, is_buyer, is_seller) VALUES ('" +
+                    email + "', '" + username + "', '" + password + "', " + buyerRole + ", " + sellerRole + ")";
+        	DataManipulation.update(insertUsers);
         	
         	
         	
@@ -198,7 +275,7 @@ public class signUpPage extends Pane {
         bottomRightBox.setPadding(new Insets(10, 0, 0, 0));  // Add padding to separate it from the above elements
 
         // Add all elements to the signUpBox
-        signUpBox.getChildren().addAll(signUpLabel, emailBox, usernameBox, passwordBox, confirmPasswordBox, roleBox, bottomRightBox);
+        signUpBox.getChildren().addAll(signUpLabel, emailBox, usernameBox, passwordBox, confirmPasswordBox, roleBox, bottomRightBox, errorBox);
 
         // Set layout position and add to main pane
         signUpBox.layoutXProperty().bind(testRectangle.xProperty().add(20));
