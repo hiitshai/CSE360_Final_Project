@@ -56,6 +56,13 @@ public class signUpPage extends Pane {
         HBox usernameBox = new HBox(10, usernameLabel, usernameTextField);
         usernameBox.setAlignment(Pos.BASELINE_LEFT);
 
+        
+        
+        
+        
+        
+        
+        //Password Sections
         Label passwordLabel = new Label("PASSWORD:");
         passwordLabel.setFont(new Font("Arial", 14));
         passwordLabel.setMinWidth(200);
@@ -132,11 +139,23 @@ public class signUpPage extends Pane {
         
         Button confirmButton = new Button("Join Now");
         confirmButton.setOnAction(e -> {
+			if(passwordField.getText() != confirmPasswordField.getText()) {
+				
+				Label notMatchLabel = new Label("Passwords do not match");
+				notMatchLabel.setFont(new Font("Arial", 14));
+				notMatchLabel.setMinWidth(200);
+				roleBox.getChildren().addAll(notMatchLabel);
+			}
+        	
+        	String email = emailTextField.getText();
+        	String username = usernameTextField.getText();
+        	
+        	String password = confirmPasswordField.getText();
         	
         	
         	
         	
-        	
+        	/*
         	
             loginPage loginPage = new loginPage();
             Scene loginPageScene = new Scene(loginPage, 800, 400);
@@ -161,7 +180,7 @@ public class signUpPage extends Pane {
             Scene popupScene = new Scene(popupLayout, 250, 150);
             popupStage.setScene(popupScene);
 
-            popupStage.show();
+            popupStage.show(); */
         });
 
         Button returnToLoginButton = new Button("Return to Login");

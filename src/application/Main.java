@@ -43,7 +43,7 @@ public class Main extends Application {
 		DataManipulation.update(createUserTable);
 
 
-		String insertUsers = "IF NOT EXIST INSERT INTO user (email, username, password, is_buyer, is_seller, is_admin) VALUES " +
+		String insertUsers = "INSERT INTO user (email, username, password, is_buyer, is_seller, is_admin) VALUES " +
 		        "('hdtang1@asu.edu', 'hdtang1', 'password', '0', '0', '1')," + //My SQL does not support boolean data types, it replaces false with 0 and true with 1
 		        "('test', 'test', 'test', '1', '1', '0')";
 		DataManipulation.update(insertUsers);

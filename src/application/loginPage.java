@@ -168,22 +168,46 @@ public class loginPage extends Pane {
                 Stage mainStage = Main.getPrimaryStage();
                 mainStage.setScene(myAccountScene);
         	}*/
-    	    String username = usernameField.getText();
-    	    String password = passwordField.getText(); // In practice, use a hashed version of this password for comparison.
+        	String username = usernameField.getText();
+            String password = passwordField.getText();
 
-    	    if (isValidCredentials(username, password)) {
-    	        myAccountPage myAccount = new myAccountPage();
-    	        Scene myAccountScene = new Scene(myAccount, 800, 400);
-    	        myAccount.setStyle("-fx-background-color: #F5DEB3;");            
-    	        Stage mainStage = Main.getPrimaryStage();
-    	        mainStage.setScene(myAccountScene);
-    	    } else {
-    	        // Show error message if credentials are invalid
-    	        Label errorLabel = new Label("Invalid username or password.");
-    	        errorLabel.setTextFill(Color.RED);
-    	        loginBox.getChildren().add(errorLabel);
-    	    }
-        });
+            if (isValidCredentials(username, password)) {
+                try {
+                    String query = "SELECT is_admin FROM user WHERE username = ?";
+                    
+                    PreparedStatement preparedStatement = DatabaseConnection.getConnection2DB().prepareStatement(query);
+                    preparedStatement.setString(1, username);
+                    
+                    ResultSet resultSet = preparedStatement.executeQuery();
+
+                    if (resultSet.next()) {
+                        boolean isAdmin = resultSet.getBoolean("is_admin");
+                        if (!isAdmin) {
+                            // User is not an admin, proceed to account page
+                            myAccountPage myAccount = new myAccountPage();
+                            Scene myAccountScene = new Scene(myAccount, 800, 400);
+                            myAccount.setStyle("-fx-background-color: #F5DEB3;");
+                            Stage mainStage = Main.getPrimaryStage();
+                            mainStage.setScene(myAccountScene);
+                        } else {
+                            Label errorLabel = new Label("Admin not implement fix this later");
+                            errorLabel.setTextFill(Color.RED);
+                            loginBox.getChildren().add(errorLabel);
+                        }
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    Label errorLabel = new Label("An error occurred. Please try again.");
+                    errorLabel.setTextFill(Color.RED);
+                    loginBox.getChildren().add(errorLabel);
+                }
+            } else {
+                Label errorLabel = new Label("Invalid username or password.");
+                errorLabel.setTextFill(Color.RED);
+                loginBox.getChildren().add(errorLabel);
+            	}
+        	}
+        );
 
         loginBox.getChildren().addAll(signInLabel, usernameLabel, usernameField, passwordLabel, passwordField, visiblePasswordField, toggleButton, forgotPasswordButton, forgotUsernameButton, loginButton);
         loginBox.layoutXProperty().bind(loginRectangle.xProperty().add(20)); 
