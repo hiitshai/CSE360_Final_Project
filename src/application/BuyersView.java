@@ -254,10 +254,21 @@ public class BuyersView extends Pane {
     }
 
     private void proceedToCheckout() {
-        checkoutpage checkout = new checkoutpage(totalPrice);
+        if (booksInCart.isEmpty()) {
+        showAlert("Empty Cart", "Your cart is empty!");
+        return;
+    }
+
+    try {
+        checkoutPage checkout = new checkoutPage(totalPrice, booksInCart);
         Scene checkoutScene = new Scene(checkout, 800, 600);
         Stage mainStage = Main.getPrimaryStage();
         mainStage.setScene(checkoutScene);
+    } catch (Exception e) {
+        e.printStackTrace();
+        showAlert("Error", "Could not proceed to checkout: " + e.getMessage());
+    }
+
     }
 
     private void searchBooks(String searchText, String category, String condition, String year) {
