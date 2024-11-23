@@ -229,35 +229,13 @@ public class signUpPage extends Pane {
                     email + "', '" + username + "', '" + password + "', " + buyerRole + ", " + sellerRole + ")";
         	DataManipulation.update(insertUsers);
         	
-        	
-        	
-        	
-        	/*
-        	
+        
             loginPage loginPage = new loginPage();
             Scene loginPageScene = new Scene(loginPage, 800, 400);
             loginPage.setStyle("-fx-background-color: #F5DEB3;");
             Stage mainStage = Main.getPrimaryStage();
             mainStage.setScene(loginPageScene);
-            
-            Stage popupStage = new Stage();
-            popupStage.setTitle("Notification");
-
-            Label messageLabel = new Label("Account Not Yet Created");
-            messageLabel.setFont(new Font("Arial", 16));
-            messageLabel.setPadding(new Insets(10));
-
-            Button closeButton = new Button("Okay");
-            closeButton.setOnAction(event -> popupStage.close());
-
-            VBox popupLayout = new VBox(10, messageLabel, closeButton);
-            popupLayout.setAlignment(Pos.CENTER);
-            popupLayout.setPadding(new Insets(20));
-
-            Scene popupScene = new Scene(popupLayout, 250, 150);
-            popupStage.setScene(popupScene);
-
-            popupStage.show(); */
+           
         });
 
         Button returnToLoginButton = new Button("Return to Login");

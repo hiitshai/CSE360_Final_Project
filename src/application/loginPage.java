@@ -183,12 +183,20 @@ public class loginPage extends Pane {
                     if (resultSet.next()) {
                         boolean isAdmin = resultSet.getBoolean("is_admin");
                         if (!isAdmin) {
+                        	
+                        	sellersPage sellersPage = new sellersPage();
+                            Scene sellersPageScene = new Scene(sellersPage, 800, 400);
+                            sellersPage.setStyle("-fx-background-color: #F5DEB3;");
+                            Stage mainStage = Main.getPrimaryStage();
+                            mainStage.setScene(sellersPageScene);
+                        	
+                        	
                             // User is not an admin, proceed to account page
-                            myAccountPage myAccount = new myAccountPage();
+                            /*myAccountPage myAccount = new myAccountPage();
                             Scene myAccountScene = new Scene(myAccount, 800, 400);
                             myAccount.setStyle("-fx-background-color: #F5DEB3;");
                             Stage mainStage = Main.getPrimaryStage();
-                            mainStage.setScene(myAccountScene);
+                            mainStage.setScene(myAccountScene);*/
                         } else {
                             Label errorLabel = new Label("Admin not implement fix this later");
                             errorLabel.setTextFill(Color.RED);
