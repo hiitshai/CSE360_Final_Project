@@ -1,4 +1,4 @@
-package application; 
+package application;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -25,7 +25,7 @@ public class BuyersView extends Pane {
     public BuyersView() {
         booksInCart = new ArrayList<>();
         
-        // Main rectangle (matching your style)
+        // Main rectangle
         Rectangle testRectangle = new Rectangle();
         testRectangle.widthProperty().bind(this.widthProperty().multiply(0.8));
         testRectangle.heightProperty().bind(this.heightProperty().multiply(0.8));
@@ -255,24 +255,22 @@ public class BuyersView extends Pane {
 
     private void proceedToCheckout() {
         if (booksInCart.isEmpty()) {
-        showAlert("Empty Cart", "Your cart is empty!");
-        return;
-    }
+            showAlert("Empty Cart", "Your cart is empty!");
+            return;
+        }
 
-    try {
-        checkoutPage checkout = new checkoutPage(totalPrice, booksInCart);
-        Scene checkoutScene = new Scene(checkout, 800, 600);
-        Stage mainStage = Main.getPrimaryStage();
-        mainStage.setScene(checkoutScene);
-    } catch (Exception e) {
-        e.printStackTrace();
-        showAlert("Error", "Could not proceed to checkout: " + e.getMessage());
-    }
-
+        try {
+            checkoutPage checkout = new checkoutPage(totalPrice, booksInCart);
+            Scene checkoutScene = new Scene(checkout, 800, 600);
+            Stage mainStage = Main.getPrimaryStage();
+            mainStage.setScene(checkoutScene);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Error", "Could not proceed to checkout: " + e.getMessage());
+        }
     }
 
     private void searchBooks(String searchText, String category, String condition, String year) {
-        // Implement search functionality using the database
         try {
             Connection conn = DatabaseConnection.getConnection2DB();
             StringBuilder queryBuilder = new StringBuilder("SELECT * FROM books WHERE available = 1");
@@ -298,7 +296,6 @@ public class BuyersView extends Pane {
             PreparedStatement pstmt = conn.prepareStatement(queryBuilder.toString());
             ResultSet rs = pstmt.executeQuery();
             
-            // Update the book listing with search results
             VBox bookList = new VBox(10);
             while (rs.next()) {
                 bookList.getChildren().add(createBookCard(
@@ -310,7 +307,6 @@ public class BuyersView extends Pane {
                 ));
             }
             
-            // Update the scroll pane content
             ((ScrollPane) this.getChildren().get(1)).setContent(bookList);
             
         } catch (SQLException e) {
@@ -327,12 +323,12 @@ public class BuyersView extends Pane {
         alert.showAndWait();
     }
 
-    private static class Book {
-        int id;
-        String title;
-        String category;
-        String condition;
-        double price;
+    public static class Book {
+        public final int id;
+        public final String title;
+        public final String category;
+        public final String condition;
+        public final double price;
 
         public Book(int id, String title, String category, String condition, double price) {
             this.id = id;
@@ -343,4 +339,3 @@ public class BuyersView extends Pane {
         }
     }
 }
-
