@@ -83,7 +83,16 @@ public class sellersPage extends Pane {
         rootLayout.getChildren().addAll(sidebar, mainLayout);
         HBox.setHgrow(mainLayout, Priority.ALWAYS);
 
+        // Add root layout to this Pane
         this.getChildren().add(rootLayout);
+
+        // Add Button Event Handlers
+        dashboardButton.setOnAction(e -> loadDashboard(mainLayout));
+        productListButton.setOnAction(e -> loadProductList(mainLayout));
+        addProductButton.setOnAction(e -> openAddProductForm(mainLayout));
+        myAccountButton.setOnAction(e -> openMyAccount(mainLayout));
+        switchUserButton.setOnAction(e -> switchUser());
+        logOutButton.setOnAction(e -> logOut());
     }
 
     // Helper Method to Create Stat Cards
@@ -120,5 +129,46 @@ public class sellersPage extends Pane {
 
         card.getChildren().addAll(titleLabel, mainStatLabel, subTextLabel, changeBox);
         return card;
+    }
+
+    // Load Dashboard Content
+    private void loadDashboard(VBox mainLayout) {
+        Label dashboardLabel = new Label("Dashboard Content");
+        dashboardLabel.setFont(new Font("Arial", 20));
+        mainLayout.getChildren().setAll(dashboardLabel);
+    }
+
+    // Load Product List
+    private void loadProductList(VBox mainLayout) {
+        VBox productList = new VBox(10);
+        productList.setPadding(new Insets(20));
+        productList.getChildren().add(new Label("Product 1"));
+        productList.getChildren().add(new Label("Product 2"));
+        productList.getChildren().add(new Label("Product 3"));
+        mainLayout.getChildren().setAll(productList);
+    }
+
+    // Open Add Product Form
+    private void openAddProductForm(VBox mainLayout) {
+        Label addProductLabel = new Label("Add Product Form");
+        addProductLabel.setFont(new Font("Arial", 20));
+        mainLayout.getChildren().setAll(addProductLabel);
+    }
+
+    // Open My Account Page
+    private void openMyAccount(VBox mainLayout) {
+        Label accountLabel = new Label("My Account Information");
+        accountLabel.setFont(new Font("Arial", 20));
+        mainLayout.getChildren().setAll(accountLabel);
+    }
+
+    // Switch User Logic
+    private void switchUser() {
+        System.out.println("Switching user...");
+    }
+
+    // Log Out Logic
+    private void logOut() {
+        System.out.println("Logging out...");
     }
 }
