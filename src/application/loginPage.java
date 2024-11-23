@@ -23,18 +23,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-/*PLEASE READ
- * You can go to the My Account page by typing the login info below. The signup page currently
- * does not create new accounts. We have yet to implement the database. Thank you!
- * 
- * LOGIN INFO: 
- * USERNAME: test
- * PASSWORD: test
- * 
- * 
- * 
- * */
-
 public class loginPage extends Pane {
     
 	private boolean isValidCredentials(String username, String password) {

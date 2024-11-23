@@ -6,6 +6,7 @@ import java.sql.Statement;
 
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -54,13 +55,16 @@ public class forgotUsernamePage extends StackPane {
 
                 if (resultSet.next()) {
                     String username = resultSet.getString("username");
-                    Label usernameLabel = new Label("Your Username is: " + username);
+                    /*Label usernameLabel = new Label("Your Username is: " + username);
                     usernameLabel.setFont(new Font("Arial", 14));
-                    usernameLabel.setMinWidth(200);
-                   
-                    
+                    usernameLabel.setMinWidth(200); 
                     errorBox.getChildren().add(usernameLabel);
-                    
+                    */
+                	Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Username Found");
+                    alert.setHeaderText("Your Username:");
+                    alert.setContentText(username);
+                    alert.showAndWait(); 
                     
                 } else {
                     Label emailExist = new Label("Email doesn't exist");
@@ -72,23 +76,28 @@ public class forgotUsernamePage extends StackPane {
             } catch (SQLException e1) {
                 e1.printStackTrace();
             }
-        
-        	   	
-        	
+	
             /*loginPage loginPage = new loginPage();
             Scene loginScene = new Scene(loginPage, 800, 400);
             Stage mainStage = Main.getPrimaryStage();
             mainStage.setScene(loginScene);
             */
         });
+        
+    	Button returnButton = new Button("Return to Login");
+    	returnButton.setOnAction(e ->  {
+    		loginPage loginPage = new loginPage();
+            Scene loginScene = new Scene(loginPage, 800, 400);
+            Stage mainStage = Main.getPrimaryStage();
+            mainStage.setScene(loginScene);
+    	});
 
-        // VBox to hold content inside the box
-        VBox contentBox = new VBox(15, titleLabel, emailLabel, emailTextField, confirmButton, errorBox);
+        VBox contentBox = new VBox(15, titleLabel, emailLabel, emailTextField, confirmButton, returnButton, errorBox);
         contentBox.setAlignment(Pos.CENTER);
         contentBox.prefWidthProperty().bind(box.widthProperty().multiply(0.8)); // Inside padding
         contentBox.prefHeightProperty().bind(box.heightProperty().multiply(0.8));
 
-        // StackPane to overlay content over the rectangle
+
         StackPane resizableBox = new StackPane(box, contentBox);
         resizableBox.setAlignment(Pos.CENTER);
 
