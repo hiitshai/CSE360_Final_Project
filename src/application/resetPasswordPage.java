@@ -3,21 +3,20 @@ package application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 public class resetPasswordPage extends StackPane {
 
-    public resetPasswordPage() {
+    public resetPasswordPage(String email) { // Accept email to identify the user
         this.setStyle("-fx-background-color: #F5DEB3;");
 
         // Background rectangle
@@ -106,7 +105,26 @@ public class resetPasswordPage extends StackPane {
                 }
                 return;
             }
-            System.out.println("Password reset successfully!");
+
+            String newPassword = passwordField.getText();
+
+            // Update password in the database
+            try (Connection conn = DatabaseConnection.getConnection2DB();
+                 PreparedStatement pstmt = conn.prepareStatement("UPDATE user SET password = ? WHERE email = ?")) {
+                pstmt.setString(1, newPassword); // In a real-world app, hash this password before saving
+                pstmt.setString(2, email);
+                int rowsAffected = pstmt.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("Password reset successfully!");
+                    showAlert("Success", "Your password has been reset successfully.");
+                } else {
+                    showAlert("Error", "Failed to reset password. Please try again.");
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                showAlert("Database Error", "An error occurred while resetting the password.");
+            }
         });
 
         // Return to Login Button
@@ -132,5 +150,12 @@ public class resetPasswordPage extends StackPane {
 
         this.getChildren().add(resizableBox);
     }
-}
 
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+}

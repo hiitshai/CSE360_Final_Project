@@ -48,25 +48,27 @@ public class Main extends Application {
 		        "('test', 'test', 'test', '1', '1', '0')";
 		DataManipulation.update(insertUsers);
 
-		/*String query = "SELECT book.author " + "FROM book " + "JOIN borrow ON book.book_id = borrow.book_id "
-				+ "JOIN user ON borrow.user_id = user.user_id " + "WHERE user.name = 'Jane Smith'";
-		
-		
-		ResultSet rs = DataManipulation.query(query);
 
-		try {
-			while (rs.next()) {
-			
-				System.out.println("Author: " + rs.getString("book.author"));
-				
-			}
-			rs.close();
-			
-		} catch (SQLException e) {
-			
-			System.out.println("No author is found.");
-			
-		}*/
-        
+		String createBookTable = "CREATE TABLE IF NOT EXISTS books (" +
+		        "book_id INT AUTO_INCREMENT PRIMARY KEY, " +
+		        "title VARCHAR(255) NOT NULL, " +
+		        "category VARCHAR(50), " +
+		        "`condition` VARCHAR(20), " +  // Enclosed in backticks
+		        "price DECIMAL(10,2), " +
+		        "available BOOLEAN DEFAULT TRUE, " +
+		        "publication_year INT" +
+		        ")";
+		DataManipulation.update(createBookTable);
+
+
+		String insertBooks = "INSERT INTO books (title, category, `condition`, price, available, publication_year) VALUES " +
+		        "('Java Programming', 'Computer Books', 'Used Like New', 59.99, 1, 2023)," +
+		        "('Calculus I', 'Math Books', 'Moderate Use', 45.99, 1, 2022)," +
+		        "('Chemistry Basics', 'Natural Science Books', 'Heavy Use', 29.99, 1, 2021)," +
+		        "('English Literature', 'English Language Books', 'Used Like New', 35.99, 1, 2023)," +
+		        "('Physics 101', 'Natural Science Books', 'Moderate Use', 49.99, 1, 2022)";
+		DataManipulation.update(insertBooks);
+
+
     }
 }

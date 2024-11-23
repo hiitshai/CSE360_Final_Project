@@ -21,6 +21,8 @@ public class BuyersView extends Pane {
     private double totalPrice = 0.0;
     private List<Book> booksInCart;
     private Label totalLabel;
+    
+    int addToCartCounter = 0;
 
     public BuyersView() {
         booksInCart = new ArrayList<>();
@@ -134,6 +136,7 @@ public class BuyersView extends Pane {
     private ScrollPane createBookListing() {
         VBox bookList = new VBox(10);
         bookList.setPadding(new Insets(10));
+        bookList.getChildren().clear();
 
         try {
             Connection conn = DatabaseConnection.getConnection2DB();
@@ -142,6 +145,12 @@ public class BuyersView extends Pane {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
+            	
+            	String condition = rs.getString("condition");
+            	if (condition == null) {
+            	    condition = "Unknown Condition"; // Provide a default value
+            	}
+
                 bookList.getChildren().add(createBookCard(
                     rs.getInt("book_id"),
                     rs.getString("title"),
@@ -179,8 +188,12 @@ public class BuyersView extends Pane {
         Button addToCartBtn = new Button("Add to Cart");
         addToCartBtn.setStyle("-fx-background-color: #8C1D40;"); // ASU Maroon
         addToCartBtn.setTextFill(Color.WHITE);
-        addToCartBtn.setOnAction(e -> addToCart(new Book(bookId, title, category, condition, price)));
-
+        addToCartBtn.setOnAction(e -> {
+        	//addToCartCounter++;
+        	addToCart(new Book(bookId, title, category, condition, price));
+        	
+        });
+        		
         card.getChildren().addAll(details, addToCartBtn);
         return card;
     }
@@ -190,7 +203,7 @@ public class BuyersView extends Pane {
         bottomBar.setPadding(new Insets(10));
         bottomBar.setAlignment(Pos.CENTER_RIGHT);
 
-        Button viewCartBtn = new Button("View Cart (" + booksInCart.size() + ")");
+        Button viewCartBtn = new Button("View Cart (" + addToCartCounter + ")");
         viewCartBtn.setStyle("-fx-background-color: #8C1D40;");
         viewCartBtn.setTextFill(Color.WHITE);
         viewCartBtn.setOnAction(e -> showCart());
@@ -202,12 +215,17 @@ public class BuyersView extends Pane {
             Stage mainStage = Main.getPrimaryStage();
             mainStage.setScene(loginScene);
         });
+        
+        if (totalLabel == null) {
+            totalLabel = new Label("Total: $0.00");
+        }
 
         bottomBar.getChildren().addAll(totalLabel, viewCartBtn, logoutBtn);
         return bottomBar;
     }
 
     private void addToCart(Book book) {
+    	addToCartCounter++;
         booksInCart.add(book);
         totalPrice += book.price;
         totalLabel.setText(String.format("Total: $%.2f", totalPrice));

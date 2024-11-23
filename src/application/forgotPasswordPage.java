@@ -58,7 +58,7 @@ public class forgotPasswordPage extends StackPane {
 
                 if (resultSet.next() && resultSet.getInt(1) > 0) {
                 	
-                	resetPasswordPage resetPasswordPage = new resetPasswordPage();
+                	resetPasswordPage resetPasswordPage = new resetPasswordPage(email);
                     Scene resetPasswordScene = new Scene(resetPasswordPage, 800, 600);
                     Stage mainStage = Main.getPrimaryStage();
                     mainStage.setScene(resetPasswordScene);
