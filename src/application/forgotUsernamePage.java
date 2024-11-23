@@ -87,7 +87,7 @@ public class forgotUsernamePage extends StackPane {
     	Button returnButton = new Button("Return to Login");
     	returnButton.setOnAction(e ->  {
     		loginPage loginPage = new loginPage();
-            Scene loginScene = new Scene(loginPage, 800, 400);
+            Scene loginScene = new Scene(loginPage, 800, 600);
             Stage mainStage = Main.getPrimaryStage();
             mainStage.setScene(loginScene);
     	});
