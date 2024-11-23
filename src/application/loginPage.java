@@ -131,7 +131,7 @@ public class loginPage extends Pane {
 
         forgotPasswordButton.setOnAction(e -> {
         	forgotPasswordPage forgotPassword = new forgotPasswordPage();
-            Scene forgotPasswordScene = new Scene(forgotPassword, 800, 400);
+            Scene forgotPasswordScene = new Scene(forgotPassword, 800, 600);
             forgotPassword.setStyle("-fx-background-color: #F5DEB3;");            
             Stage mainStage = Main.getPrimaryStage();
             mainStage.setScene(forgotPasswordScene);
@@ -139,7 +139,7 @@ public class loginPage extends Pane {
 
         forgotUsernameButton.setOnAction(e -> {
         	forgotUsernamePage forgotUsername = new forgotUsernamePage();
-            Scene forgotUsernameScene = new Scene(forgotUsername, 800, 400);
+            Scene forgotUsernameScene = new Scene(forgotUsername, 800, 600);
             forgotUsername.setStyle("-fx-background-color: #F5DEB3;");            
             Stage mainStage = Main.getPrimaryStage();
             mainStage.setScene(forgotUsernameScene);
@@ -173,7 +173,7 @@ public class loginPage extends Pane {
                         if (!isAdmin) {
                         	
                         	sellersPage sellersPage = new sellersPage();
-                            Scene sellersPageScene = new Scene(sellersPage, 800, 400);
+                            Scene sellersPageScene = new Scene(sellersPage, 800, 600);
                             sellersPage.setStyle("-fx-background-color: #F5DEB3;");
                             Stage mainStage = Main.getPrimaryStage();
                             mainStage.setScene(sellersPageScene);
@@ -232,7 +232,7 @@ public class loginPage extends Pane {
         
         signUpButton.setOnAction(e -> {
             signUpPage signUp = new signUpPage();
-            Scene signUpScene = new Scene(signUp, 800, 400);
+            Scene signUpScene = new Scene(signUp, 800, 600);
             signUp.setStyle("-fx-background-color: #F5DEB3;");            
             Stage mainStage = Main.getPrimaryStage();
             mainStage.setScene(signUpScene);

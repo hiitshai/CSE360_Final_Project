@@ -231,7 +231,7 @@ public class signUpPage extends Pane {
         	
         
             loginPage loginPage = new loginPage();
-            Scene loginPageScene = new Scene(loginPage, 800, 400);
+            Scene loginPageScene = new Scene(loginPage, 800, 460);
             loginPage.setStyle("-fx-background-color: #F5DEB3;");
             Stage mainStage = Main.getPrimaryStage();
             mainStage.setScene(loginPageScene);
@@ -241,7 +241,7 @@ public class signUpPage extends Pane {
         Button returnToLoginButton = new Button("Return to Login");
         returnToLoginButton.setOnAction(e -> {
             loginPage loginPage = new loginPage();
-            Scene loginPageScene = new Scene(loginPage, 800, 400);
+            Scene loginPageScene = new Scene(loginPage, 800, 600);
             loginPage.setStyle("-fx-background-color: #F5DEB3;");
             Stage mainStage = Main.getPrimaryStage();
             mainStage.setScene(loginPageScene);

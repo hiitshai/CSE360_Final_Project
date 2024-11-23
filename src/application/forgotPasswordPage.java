@@ -59,7 +59,7 @@ public class forgotPasswordPage extends StackPane {
                 if (resultSet.next() && resultSet.getInt(1) > 0) {
                 	
                 	resetPasswordPage resetPasswordPage = new resetPasswordPage();
-                    Scene resetPasswordScene = new Scene(resetPasswordPage, 800, 400);
+                    Scene resetPasswordScene = new Scene(resetPasswordPage, 800, 600);
                     Stage mainStage = Main.getPrimaryStage();
                     mainStage.setScene(resetPasswordScene);
 
@@ -79,7 +79,7 @@ public class forgotPasswordPage extends StackPane {
     	Button returnButton = new Button("Return to Login");
     	returnButton.setOnAction(e ->  {
     		loginPage loginPage = new loginPage();
-            Scene loginScene = new Scene(loginPage, 800, 400);
+            Scene loginScene = new Scene(loginPage, 800, 600);
             Stage mainStage = Main.getPrimaryStage();
             mainStage.setScene(loginScene);
     	});

@@ -17,7 +17,7 @@ public class Main extends Application {
     	primaryStage = primary; 
         loginPage loginPage = new loginPage();
 
-        Scene scene = new Scene(loginPage, 800, 400);
+        Scene scene = new Scene(loginPage, 800, 600);
         loginPage.setStyle("-fx-background-color: #F5DEB3;");
         primary.setTitle("ASU Bookstore");
         primary.setScene(scene);
