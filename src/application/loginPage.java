@@ -179,6 +179,12 @@ public class loginPage extends Pane {
                             mainStage.setScene(sellersPageScene);
                         	
                         	
+                        	/*buyersConfirmationPage confirmationPage = new buyersConfirmationPage();
+                        	Scene confirmationPageScene = new Scene(confirmationPage, 800, 600);
+                        	Stage mainStage = Main.getPrimaryStage(); // Your main application's stage
+                        	mainStage.setScene(confirmationPageScene);
+                        	mainStage.show();*/
+                        	
                             // User is not an admin, proceed to account page
                             /*myAccountPage myAccount = new myAccountPage();
                             Scene myAccountScene = new Scene(myAccount, 800, 400);
