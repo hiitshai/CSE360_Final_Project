@@ -111,7 +111,7 @@ public class resetPasswordPage extends StackPane {
             // Update password in the database
             try (Connection conn = DatabaseConnection.getConnection2DB();
                  PreparedStatement pstmt = conn.prepareStatement("UPDATE user SET password = ? WHERE email = ?")) {
-                pstmt.setString(1, newPassword); // In a real-world app, hash this password before saving
+                pstmt.setString(1, newPassword); 
                 pstmt.setString(2, email);
                 int rowsAffected = pstmt.executeUpdate();
 
@@ -127,24 +127,20 @@ public class resetPasswordPage extends StackPane {
             }
         });
 
-        // Return to Login Button
         Button returnToLoginButton = new Button("Return to Login");
         returnToLoginButton.setOnAction(e -> {
             loginPage loginPage = new loginPage();
             Stage stage = (Stage) this.getScene().getWindow();
-            stage.setScene(new Scene(loginPage, 800, 600)); // Adjust dimensions if needed
+            stage.setScene(new Scene(loginPage, 800, 600)); 
         });
 
-        // Buttons Box (for Reset Password and Return to Login)
         HBox buttonsBox = new HBox(20, resetPasswordButton, returnToLoginButton);
         buttonsBox.setAlignment(Pos.CENTER);
 
-        // Add all elements to a VBox
         VBox contentBox = new VBox(20, titleLabel, passwordBox, confirmPasswordBox, errorBox, buttonsBox);
         contentBox.setAlignment(Pos.CENTER);
         contentBox.setPadding(new Insets(20));
 
-        // Add contentBox to the resizable StackPane
         StackPane resizableBox = new StackPane(box, contentBox);
         resizableBox.setAlignment(Pos.CENTER);
 

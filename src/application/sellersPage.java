@@ -159,7 +159,7 @@ public class sellersPage extends Pane {
     private void openMyAccount(VBox mainLayout) {
     	myAccountPage myAccount = new myAccountPage();
         Scene myAccountPageScene = new Scene(myAccount, 800, 400);
-        //loginPage.setStyle("-fx-background-color: #F5DEB3;");
+        myAccount.setStyle("-fx-background-color: #F5DEB3;");
         Stage mainStage = Main.getPrimaryStage();
         mainStage.setScene(myAccountPageScene);
     }

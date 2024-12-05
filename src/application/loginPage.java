@@ -23,7 +23,14 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+
+
 public class loginPage extends Pane {
+	
+	public static String emailString = "";
+	public static String usernameString = "";
+	public static String roleString = "";
+	//public static String roleString = "";
     
 	private boolean isValidCredentials(String username, String password) {
 	    String query = "SELECT password FROM user WHERE username = ?";
@@ -156,12 +163,53 @@ public class loginPage extends Pane {
                 Stage mainStage = Main.getPrimaryStage();
                 mainStage.setScene(myAccountScene);
         	}*/
+        	
         	String username = usernameField.getText();
             String password = passwordField.getText();
 
             if (isValidCredentials(username, password)) {
                 try {
-                    String query = "SELECT is_admin FROM user WHERE username = ?";
+                	usernameString = username;
+                	
+                	String emailQuery = "SELECT email FROM user WHERE username = ?";
+                	try (PreparedStatement emailPreparedStatement = DatabaseConnection.getConnection2DB().prepareStatement(emailQuery)) {
+                		emailPreparedStatement.setString(1, username);
+
+                        ResultSet resultSet = emailPreparedStatement.executeQuery();
+
+                        if (resultSet.next()) {
+                            emailString = resultSet.getString("email");
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                	//System.out.print(emailString);
+                	
+                	String roleQuery = "SELECT is_buyer, is_seller FROM user WHERE username = ?";
+                	try (PreparedStatement rolePreparedStatement = DatabaseConnection.getConnection2DB().prepareStatement(roleQuery)) {
+                		rolePreparedStatement.setString(1, username);
+
+                        ResultSet resultSet = rolePreparedStatement.executeQuery();
+
+                        if (resultSet.next()) {
+                        	boolean is_buyer = resultSet.getBoolean("is_Buyer");
+                        	boolean is_seller = resultSet.getBoolean("is_Seller");
+                        	if(!is_buyer) {
+                        		roleString = "Seller";
+                        	}
+                        	else if(!is_seller) {
+                        		roleString = "Buyer";
+                        	}
+                        	else {
+                        		roleString = "Buyer and Seller";
+                        	}
+                        	
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+
+                    String query = "SELECT is_admin, is_buyer, is_seller FROM user WHERE username = ?";
                     
                     PreparedStatement preparedStatement = DatabaseConnection.getConnection2DB().prepareStatement(query);
                     preparedStatement.setString(1, username);
@@ -170,28 +218,26 @@ public class loginPage extends Pane {
 
                     if (resultSet.next()) {
                         boolean isAdmin = resultSet.getBoolean("is_admin");
-                        if (!isAdmin) {
+                        boolean is_buyer = resultSet.getBoolean("is_Buyer");
+                    	boolean is_seller = resultSet.getBoolean("is_Seller");
+                        if (!isAdmin && !is_buyer) {
                         	
                         	sellersPage sellersPage = new sellersPage();
                             Scene sellersPageScene = new Scene(sellersPage, 800, 600);
                             sellersPage.setStyle("-fx-background-color: #F5DEB3;");
                             Stage mainStage = Main.getPrimaryStage();
                             mainStage.setScene(sellersPageScene);
-                        	
-                        	
-                        	/*buyersConfirmationPage confirmationPage = new buyersConfirmationPage();
-                        	Scene confirmationPageScene = new Scene(confirmationPage, 800, 600);
-                        	Stage mainStage = Main.getPrimaryStage(); // Your main application's stage
-                        	mainStage.setScene(confirmationPageScene);
-                        	mainStage.show();*/
-                        	
-                            // User is not an admin, proceed to account page
-                            /*myAccountPage myAccount = new myAccountPage();
-                            Scene myAccountScene = new Scene(myAccount, 800, 400);
-                            myAccount.setStyle("-fx-background-color: #F5DEB3;");
-                            Stage mainStage = Main.getPrimaryStage();
-                            mainStage.setScene(myAccountScene);*/
-                        } else {
+
+                        }
+                        else if(!isAdmin && !is_seller) {
+                        	BuyersView buyersPage = new BuyersView();
+                        	Scene buyersScene = new Scene(buyersPage, 800, 600);
+                        	buyersPage.setStyle("-fx-background-color: #F5DEB3;");
+                        	Stage mainStage = Main.getPrimaryStage();
+                        	mainStage.setScene(buyersScene);
+                        	}
+                        
+                        else {
                             Label errorLabel = new Label("Admin not implement fix this later");
                             errorLabel.setTextFill(Color.RED);
                             loginBox.getChildren().add(errorLabel);

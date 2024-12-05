@@ -250,7 +250,7 @@ public class signUpPage extends Pane {
         // Wrap button in HBox aligned to the right
         HBox bottomRightBox = new HBox(100, confirmButton, returnToLoginButton);
         bottomRightBox.setAlignment(Pos.BOTTOM_RIGHT);
-        bottomRightBox.setPadding(new Insets(10, 0, 0, 0));  // Add padding to separate it from the above elements
+        bottomRightBox.setPadding(new Insets(10, 0, 0, 0));  
 
         // Add all elements to the signUpBox
         signUpBox.getChildren().addAll(signUpLabel, emailBox, usernameBox, passwordBox, confirmPasswordBox, roleBox, bottomRightBox, errorBox);
