@@ -21,19 +21,25 @@ public class BuyersView extends Pane {
     private double totalPrice = 0.0;
     private List<Book> booksInCart;
     private Label totalLabel;
-    
-    int addToCartCounter = 0;
+    private int addToCartCounter = 0;
+    private ScrollPane bookListScrollPane;
+    private VBox bookListContainer;
 
     public BuyersView() {
+        // Initialize variables first
         booksInCart = new ArrayList<>();
+        cartItems = new VBox(10);
+        cartItems.setPadding(new Insets(10));
+        totalLabel = new Label("Total: $0.00");
+        addToCartCounter = 0;
         
         // Main rectangle
-        Rectangle testRectangle = new Rectangle();
-        testRectangle.widthProperty().bind(this.widthProperty().multiply(0.8));
-        testRectangle.heightProperty().bind(this.heightProperty().multiply(0.8));
-        testRectangle.xProperty().bind(this.widthProperty().subtract(testRectangle.widthProperty()).divide(2));
-        testRectangle.yProperty().bind(this.heightProperty().subtract(testRectangle.heightProperty()).divide(2));
-        testRectangle.setFill(Color.WHITE);
+        Rectangle mainRectangle = new Rectangle();
+        mainRectangle.widthProperty().bind(this.widthProperty().multiply(0.8));
+        mainRectangle.heightProperty().bind(this.heightProperty().multiply(0.8));
+        mainRectangle.xProperty().bind(this.widthProperty().subtract(mainRectangle.widthProperty()).divide(2));
+        mainRectangle.yProperty().bind(this.heightProperty().subtract(mainRectangle.heightProperty()).divide(2));
+        mainRectangle.setFill(Color.WHITE);
 
         // Main content container
         VBox mainContent = new VBox(20);
@@ -45,43 +51,52 @@ public class BuyersView extends Pane {
         headerLabel.setFont(new Font("Arial", 24));
         headerLabel.setTextFill(Color.MAROON);
 
-        // Search and Filters
+        // Initialize book list container
+        bookListContainer = new VBox(10);
+        bookListContainer.setPadding(new Insets(10));
+        
+        // Initialize ScrollPane with the book list container
+        bookListScrollPane = new ScrollPane(bookListContainer);
+        bookListScrollPane.setFitToWidth(true);
+        bookListScrollPane.setPrefViewportHeight(400);
+        bookListScrollPane.setStyle("-fx-background: white;");
+
+        // Create search and filters
         VBox searchAndFilters = createSearchAndFilters();
         
-        // Book listing
-        ScrollPane bookListing = createBookListing();
-        
-        // Cart preview and navigation
+        // Create bottom bar
         HBox bottomBar = createBottomBar();
 
-        mainContent.getChildren().addAll(headerLabel, searchAndFilters, bookListing, bottomBar);
+        // Add all components to main content
+        mainContent.getChildren().addAll(headerLabel, searchAndFilters, bookListScrollPane, bottomBar);
+        
+        // Position main content
+        mainContent.layoutXProperty().bind(mainRectangle.xProperty().add(20));
+        mainContent.layoutYProperty().bind(mainRectangle.yProperty().add(20));
+        mainContent.prefWidthProperty().bind(mainRectangle.widthProperty().subtract(40));
 
-        // Position content within rectangle
-        mainContent.layoutXProperty().bind(testRectangle.xProperty().add(20));
-        mainContent.layoutYProperty().bind(testRectangle.yProperty().add(20));
-        mainContent.prefWidthProperty().bind(testRectangle.widthProperty().subtract(40));
-
-        this.getChildren().addAll(testRectangle, mainContent);
+        // Add everything to the main pane
+        this.getChildren().addAll(mainRectangle, mainContent);
         this.setStyle("-fx-background-color: #F5DEB3;");
 
-        cartItems = new VBox(10);
-        cartItems.setPadding(new Insets(10));
-        totalLabel = new Label("Total: $0.00");
+        // Load initial books
+        loadBooks();
     }
 
     private VBox createSearchAndFilters() {
         VBox container = new VBox(10);
         container.setPadding(new Insets(10));
 
-        // Search bar
+        // Search field
         TextField searchField = new TextField();
         searchField.setPromptText("Search for books...");
-        searchField.prefWidthProperty().bind(container.widthProperty().multiply(0.7));
+        searchField.setPrefWidth(300);
 
-        // Filter boxes
+        // Filters
         HBox filters = new HBox(20);
-        filters.setAlignment(Pos.CENTER);
+        filters.setAlignment(Pos.CENTER_LEFT);
 
+        // Category filter
         ComboBox<String> categoryFilter = new ComboBox<>();
         categoryFilter.getItems().addAll(
             "All Categories",
@@ -93,6 +108,7 @@ public class BuyersView extends Pane {
         );
         categoryFilter.setValue("All Categories");
 
+        // Condition filter
         ComboBox<String> conditionFilter = new ComboBox<>();
         conditionFilter.getItems().addAll(
             "All Conditions",
@@ -102,6 +118,7 @@ public class BuyersView extends Pane {
         );
         conditionFilter.setValue("All Conditions");
 
+        // Year filter
         ComboBox<String> yearFilter = new ComboBox<>();
         yearFilter.getItems().addAll(
             "All Years",
@@ -112,16 +129,19 @@ public class BuyersView extends Pane {
         );
         yearFilter.setValue("All Years");
 
+        // Search button
         Button searchButton = new Button("Search");
-        searchButton.setStyle("-fx-background-color: #8C1D40;"); // ASU Maroon
-        searchButton.setTextFill(Color.WHITE);
-        searchButton.setOnAction(e -> searchBooks(
+        searchButton.setStyle("-fx-background-color: #8C1D40; -fx-text-fill: white;");
+
+        // Event handlers
+        searchButton.setOnAction(e -> performSearch(
             searchField.getText(),
             categoryFilter.getValue(),
             conditionFilter.getValue(),
             yearFilter.getValue()
         ));
 
+        // Add components to filters
         filters.getChildren().addAll(
             new Label("Category:"), categoryFilter,
             new Label("Condition:"), conditionFilter,
@@ -129,29 +149,22 @@ public class BuyersView extends Pane {
             searchButton
         );
 
+        // Add components to container
         container.getChildren().addAll(searchField, filters);
         return container;
     }
 
-    private ScrollPane createBookListing() {
-        VBox bookList = new VBox(10);
-        bookList.setPadding(new Insets(10));
-        bookList.getChildren().clear();
-
+    private void loadBooks() {
         try {
             Connection conn = DatabaseConnection.getConnection2DB();
             String query = "SELECT * FROM books WHERE available = 1";
             PreparedStatement pstmt = conn.prepareStatement(query);
             ResultSet rs = pstmt.executeQuery();
 
-            while (rs.next()) {
-            	
-            	String condition = rs.getString("condition");
-            	if (condition == null) {
-            	    condition = "Unknown Condition"; // Provide a default value
-            	}
+            bookListContainer.getChildren().clear();
 
-                bookList.getChildren().add(createBookCard(
+            while (rs.next()) {
+                bookListContainer.getChildren().add(createBookCard(
                     rs.getInt("book_id"),
                     rs.getString("title"),
                     rs.getString("category"),
@@ -164,11 +177,62 @@ public class BuyersView extends Pane {
             e.printStackTrace();
             showAlert("Database Error", "Could not load books. Please try again later.");
         }
+    }
 
-        ScrollPane scrollPane = new ScrollPane(bookList);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setPrefViewportHeight(400);
-        return scrollPane;
+    private void performSearch(String searchText, String category, String condition, String year) {
+        try {
+            Connection conn = DatabaseConnection.getConnection2DB();
+            StringBuilder queryBuilder = new StringBuilder("SELECT * FROM books WHERE available = 1");
+            List<Object> parameters = new ArrayList<>();
+            
+            if (searchText != null && !searchText.trim().isEmpty()) {
+                queryBuilder.append(" AND title LIKE ?");
+                parameters.add("%" + searchText + "%");
+            }
+            
+            if (!"All Categories".equals(category)) {
+                queryBuilder.append(" AND category = ?");
+                parameters.add(category);
+            }
+            
+            if (!"All Conditions".equals(condition)) {
+                queryBuilder.append(" AND `condition` = ?");
+                parameters.add(condition);
+            }
+            
+            if (!"All Years".equals(year)) {
+                queryBuilder.append(" AND publication_year = ?");
+                parameters.add(Integer.parseInt(year));
+            }
+            
+            PreparedStatement pstmt = conn.prepareStatement(queryBuilder.toString());
+            
+            for (int i = 0; i < parameters.size(); i++) {
+                if (parameters.get(i) instanceof String) {
+                    pstmt.setString(i + 1, (String)parameters.get(i));
+                } else if (parameters.get(i) instanceof Integer) {
+                    pstmt.setInt(i + 1, (Integer)parameters.get(i));
+                }
+            }
+            
+            ResultSet rs = pstmt.executeQuery();
+            
+            bookListContainer.getChildren().clear();
+            
+            while (rs.next()) {
+                bookListContainer.getChildren().add(createBookCard(
+                    rs.getInt("book_id"),
+                    rs.getString("title"),
+                    rs.getString("category"),
+                    rs.getString("condition"),
+                    rs.getDouble("price")
+                ));
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Search Error", "Could not perform search. Please try again.");
+        }
     }
 
     private HBox createBookCard(int bookId, String title, String category, String condition, double price) {
@@ -186,14 +250,9 @@ public class BuyersView extends Pane {
         details.getChildren().addAll(titleLabel, categoryLabel, conditionLabel, priceLabel);
 
         Button addToCartBtn = new Button("Add to Cart");
-        addToCartBtn.setStyle("-fx-background-color: #8C1D40;"); // ASU Maroon
-        addToCartBtn.setTextFill(Color.WHITE);
-        addToCartBtn.setOnAction(e -> {
-        	//addToCartCounter++;
-        	addToCart(new Book(bookId, title, category, condition, price));
-        	
-        });
-        		
+        addToCartBtn.setStyle("-fx-background-color: #8C1D40; -fx-text-fill: white;");
+        addToCartBtn.setOnAction(e -> addToCart(new Book(bookId, title, category, condition, price)));
+
         card.getChildren().addAll(details, addToCartBtn);
         return card;
     }
@@ -204,32 +263,28 @@ public class BuyersView extends Pane {
         bottomBar.setAlignment(Pos.CENTER_RIGHT);
 
         Button viewCartBtn = new Button("View Cart (" + addToCartCounter + ")");
-        viewCartBtn.setStyle("-fx-background-color: #8C1D40;");
-        viewCartBtn.setTextFill(Color.WHITE);
+        viewCartBtn.setStyle("-fx-background-color: #8C1D40; -fx-text-fill: white;");
         viewCartBtn.setOnAction(e -> showCart());
 
         Button logoutBtn = new Button("Logout");
+        logoutBtn.setStyle("-fx-background-color: #8C1D40; -fx-text-fill: white;");
         logoutBtn.setOnAction(e -> {
             loginPage loginPage = new loginPage();
-            Scene loginScene = new Scene(loginPage, 800, 400);
+            Scene loginScene = new Scene(loginPage, 800, 600);
             Stage mainStage = Main.getPrimaryStage();
             mainStage.setScene(loginScene);
         });
-        
-        if (totalLabel == null) {
-            totalLabel = new Label("Total: $0.00");
-        }
 
         bottomBar.getChildren().addAll(totalLabel, viewCartBtn, logoutBtn);
         return bottomBar;
     }
 
     private void addToCart(Book book) {
-    	addToCartCounter++;
+        addToCartCounter++;
         booksInCart.add(book);
         totalPrice += book.price;
         totalLabel.setText(String.format("Total: $%.2f", totalPrice));
-        
+
         VBox itemBox = new VBox(5);
         itemBox.setPadding(new Insets(5));
         itemBox.setStyle("-fx-border-color: #CCCCCC; -fx-border-width: 0 0 1 0;");
@@ -256,8 +311,7 @@ public class BuyersView extends Pane {
         cartTitle.setFont(new Font("Arial", 20));
 
         Button checkoutBtn = new Button("Proceed to Checkout");
-        checkoutBtn.setStyle("-fx-background-color: #8C1D40;");
-        checkoutBtn.setTextFill(Color.WHITE);
+        checkoutBtn.setStyle("-fx-background-color: #8C1D40; -fx-text-fill: white;");
         checkoutBtn.setOnAction(e -> {
             cartStage.close();
             proceedToCheckout();
@@ -285,51 +339,6 @@ public class BuyersView extends Pane {
         } catch (Exception e) {
             e.printStackTrace();
             showAlert("Error", "Could not proceed to checkout: " + e.getMessage());
-        }
-    }
-
-    private void searchBooks(String searchText, String category, String condition, String year) {
-        try {
-            Connection conn = DatabaseConnection.getConnection2DB();
-            StringBuilder queryBuilder = new StringBuilder("SELECT * FROM books WHERE available = 1");
-            
-            List<String> conditions = new ArrayList<>();
-            if (!searchText.isEmpty()) {
-                conditions.add("title LIKE '%" + searchText + "%'");
-            }
-            if (!"All Categories".equals(category)) {
-                conditions.add("category = '" + category + "'");
-            }
-            if (!"All Conditions".equals(condition)) {
-                conditions.add("condition = '" + condition + "'");
-            }
-            if (!"All Years".equals(year)) {
-                conditions.add("publication_year = " + year);
-            }
-            
-            if (!conditions.isEmpty()) {
-                queryBuilder.append(" AND ").append(String.join(" AND ", conditions));
-            }
-            
-            PreparedStatement pstmt = conn.prepareStatement(queryBuilder.toString());
-            ResultSet rs = pstmt.executeQuery();
-            
-            VBox bookList = new VBox(10);
-            while (rs.next()) {
-                bookList.getChildren().add(createBookCard(
-                    rs.getInt("book_id"),
-                    rs.getString("title"),
-                    rs.getString("category"),
-                    rs.getString("condition"),
-                    rs.getDouble("price")
-                ));
-            }
-            
-            ((ScrollPane) this.getChildren().get(1)).setContent(bookList);
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-            showAlert("Search Error", "Could not perform search. Please try again.");
         }
     }
 
